@@ -1,9 +1,11 @@
 var dgram = require('dgram');
 var osc = require('osc-min');
 // Default IPs and ports
-var localIp = '0.0.0.0';
+// var localIp = '0.0.0.0';
+var localIp = '192.168.7.1';
 var localPort = 7563;
-var remoteIp = '127.0.0.1';
+// var remoteIp = '127.0.0.1';
+var remoteIp = '192.168.7.2';
 var remotePort = 7562;
 
 var args = process.argv;
