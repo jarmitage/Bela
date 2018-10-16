@@ -46,30 +46,35 @@ int main(int argc, char *argv[])
 	settings->render = render;
 	settings->cleanup = cleanup;
 
-	// Parse command-line arguments
-	int ret = -1;
 	while (1) {
-		int c;
-		if ((c = Bela_getopt_long(argc, argv, "h", customOptions, settings)) < 0)
-				break;
-		switch (c) {
-		case 'h':
-			usage(basename(argv[0]));
-			ret = 0;
-		case '?':
-		default:
-			usage(basename(argv[0]));
-			ret = 1;
+		int c = Bela_getopt_long(argc, argv, "h", customOptions, settings);
+		if (c < 0)
+		{
+			break;
 		}
-		Bela_InitSettings_free(settings);
-		return ret;
+		int ret = -1;
+		switch (c) {
+			case 'h':
+				usage(basename(argv[0]));
+				ret = 0;
+				break;
+			default:
+				usage(basename(argv[0]));
+				ret = 1;
+				break;
+		}
+		if(ret >= 0)
+		{
+			Bela_InitSettings_free(settings);
+			return ret;
+		}
 	}
 
 	// Initialise the PRU audio device
 	if(Bela_initAudio(settings, 0) != 0) {
 		Bela_InitSettings_free(settings);
 		fprintf(stderr,"Error: unable to initialise audio\n");
-		return -1;
+		return 1;
 	}
 	Bela_InitSettings_free(settings);
 
@@ -80,7 +85,7 @@ int main(int argc, char *argv[])
 		Bela_stopAudio();
 		// Clean up any resources allocated for audio
 		Bela_cleanupAudio();
-		return -1;
+		return 1;
 	}
 
 	// Set up interrupt handler to catch Control-C and SIGTERM
