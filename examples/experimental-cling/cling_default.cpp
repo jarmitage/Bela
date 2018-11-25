@@ -69,9 +69,8 @@ void cling_default() {
 
 /*
 
-The below assumes you have already installed Cling on Bela, 
-and run `make lib` inside /root/Bela, see this article for details:
-https://github.com/BelaPlatform/Bela/wiki/Using-the-Bela-core-with-other-programs
+This code assumes you have already installed Cling on Bela following the instructions in `cling.md`.
+If not, start there.
 
 Start Cling, then:
 
