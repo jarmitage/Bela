@@ -13,6 +13,25 @@
  *      Author: andrewm
  */
 
+/*
+ * Modifications by Jack Armitage & Giulio Moro to facilitate interaction
+ * with the Cling C++ interpreter:
+ * 
+ * extern void(*gBelaRender)(BelaContext*, void*);
+ * // Main loop to read and write data from/to PRU
+ * // void PRU::loop(void *userData, void(*render)(BelaContext*, void*), bool highPerformanceMode)
+ * void PRU::loop(void *userData, void(*DUMMY)(BelaContext*, void*), bool highPerformanceMode)
+ * {
+ *   printf("Actually starting a modified PRU::loop()");
+ *   ...
+ * 
+ * // Call user render function
+ * // ***********************
+ * // (*render)((BelaContext *)context, userData);
+ * (*gBelaRender)((BelaContext *)context, userData);
+ * 
+ */
+
 #include "../include/PRU.h"
 #include "../include/PruBinary.h"
 #include <prussdrv.h>
@@ -849,9 +868,13 @@ int PRU::testPruError()
 	}
 }
 
+// 
+extern void(*gBelaRender)(BelaContext*, void*);
 // Main loop to read and write data from/to PRU
-void PRU::loop(void *userData, void(*render)(BelaContext*, void*), bool highPerformanceMode)
+// void PRU::loop(void *userData, void(*render)(BelaContext*, void*), bool highPerformanceMode)
+void PRU::loop(void *userData, void(*DUMMY)(BelaContext*, void*), bool highPerformanceMode)
 {
+	printf("[Cling] Starting modified PRU::loop()");
 
 	// these pointers will be constant throughout the lifetime of pruMemory
 	uint16_t* analogInRaw = pruMemory->getAnalogInPtr();
@@ -1206,7 +1229,8 @@ void PRU::loop(void *userData, void(*render)(BelaContext*, void*), bool highPerf
 
 		// Call user render function
 		// ***********************
-		(*render)((BelaContext *)context, userData);
+		// (*render)((BelaContext *)context, userData);
+		(*gBelaRender)((BelaContext *)context, userData);
 		// ***********************
 
 		if(analog_enabled) {
