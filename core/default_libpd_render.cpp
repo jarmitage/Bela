@@ -292,6 +292,12 @@ void fdLoop(void* arg){
 		sys_doio();
 		usleep(3000);
 	}
+	
+	// hook for github.com/jarmitage/bela.pd
+	libpd_float("didBelaStop",1);
+	libpd_process_sys();
+	sys_doio(pd_that);
+
 }
 #endif /* PD_THREADED_IO */
 
@@ -459,6 +465,9 @@ bool setup(BelaContext *context, void *userData)
 	fdTask = Bela_createAuxiliaryTask(fdLoop, 50, "libpd-fdTask", NULL);
 	Bela_scheduleAuxiliaryTask(fdTask);
 #endif /* PD_THREADED_IO */
+
+	// hook for github.com/jarmitage/bela.pd
+	libpd_float("isThisBela",1);
 
 	dcm.setVerbose(false);
 	return true;
