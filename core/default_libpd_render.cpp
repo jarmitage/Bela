@@ -296,7 +296,7 @@ void fdLoop(void* arg){
 	// hook for github.com/jarmitage/bela.pd
 	libpd_float("didBelaStop",1);
 	libpd_process_sys();
-	sys_doio(pd_that);
+	sys_doio();
 
 }
 #endif /* PD_THREADED_IO */
