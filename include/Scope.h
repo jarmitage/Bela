@@ -53,7 +53,7 @@ class Scope{
          * number of channels of the object.
          * Omitted values will be set to 0.
          */
-        void log(float chn1, ...);
+        void log(double chn1, ...);
 
 		/**
 		 * \brief Logs a frame of data to the scope.
@@ -181,14 +181,14 @@ class Scope{
         
         // sliders
         struct ScopeSlider{
-        	float value;
-        	bool changed = false;
-        	int index;
-        	float min;
-        	float max;
-        	float step;
-        	std::string name;
-        	std::wstring w_name;
+		float value = 0;
+		bool changed = false;
+		int index;
+		float min = 0;
+		float max = 1;
+		float step = 0.01;
+		std::string name;
+		std::wstring w_name;
         };
         std::vector<ScopeSlider> sliders;
         void sendSlider(ScopeSlider* slider);

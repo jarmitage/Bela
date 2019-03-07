@@ -63,7 +63,10 @@ void Scope::setup(unsigned int _numChannels, float _sampleRate, int _numSliders)
 
 	// setup the sliders
 	sliders.resize(_numSliders);
-    
+	for(unsigned int n = 0; n < sliders.size(); ++n)
+	{
+		sliders[n].index = n;
+	}
 }
 
 void Scope::start(){
@@ -149,7 +152,8 @@ void Scope::log(const float* values){
 	postlog();
 
 }
-void Scope::log(float chn1, ...){
+
+void Scope::log(double chn1, ...){
 	
 	if (!prelog()) return;
     
@@ -466,7 +470,6 @@ void Scope::setSlider(int index, float min, float max, float step, float value, 
     sliders.at(index).step = step;
     sliders.at(index).name = name;
     sliders.at(index).w_name = std::wstring(name.begin(), name.end());
-    // scope_ws_set_slider(slider, min, max, step, value, name);
 }
 
 void Scope::setXParams(){
@@ -564,9 +567,9 @@ void Scope::scope_control_connected(){
 	// printf("sending JSON: \n%s\n", str.c_str());
 	ws_server->send("scope_control", str.c_str());
 	
-	// for (auto slider : sliders){
-	// 	sendSlider(&slider);
-	// }
+	for (auto slider : sliders){
+		sendSlider(&slider);
+	}
 }
 
 // on_data callback for scope_control websocket
@@ -592,15 +595,15 @@ void Scope::scope_control_data(const char* data){
 			parse_settings(value);
 			start();
 		} else if (event.compare(L"slider") == 0){
-			// int slider = -1;
-			// float value = 0.0f;
-			// if (root.find(L"slider") != root.end() && root[L"slider"]->IsNumber())
-			// 	slider = (int)root[L"slider"]->AsNumber();
-			// if (root.find(L"value") != root.end() && root[L"value"]->IsNumber())
-			// 	value = (float)root[L"value"]->AsNumber();
+			int slider = -1;
+			float value = 0.0f;
+			if (root.find(L"slider") != root.end() && root[L"slider"]->IsNumber())
+				slider = (int)root[L"slider"]->AsNumber();
+			if (root.find(L"value") != root.end() && root[L"value"]->IsNumber())
+				value = (float)root[L"value"]->AsNumber();
 				
-			// sliders.at(slider).value = value;
-			// sliders.at(slider).changed = true;
+			sliders.at(slider).value = value;
+			sliders.at(slider).changed = true;
 		}
 		return;
 	}
@@ -615,6 +618,33 @@ void Scope::parse_settings(JSONValue* value){
 		if (key_value->IsNumber())
 			setSetting(key, (float)key_value->AsNumber());
 	}
+	parse_settings(value);
+}
+
+void Scope::parse_settings(JSONValue* value){
+	// printf("parsing settings\n");
+	std::vector<std::wstring> keys = value->ObjectKeys();
+	for (auto key : keys){
+		JSONValue *key_value = value->Child(key.c_str());
+		if (key_value->IsNumber())
+			setSetting(key, (float)key_value->AsNumber());
+	}
+}
+
+void Scope::sendSlider(ScopeSlider* slider){
+	JSONObject root;
+	root[L"event"] = new JSONValue(L"set-slider");
+	root[L"slider"] = new JSONValue(slider->index);
+	root[L"value"] = new JSONValue(slider->value);
+	root[L"min"] = new JSONValue(slider->min);
+	root[L"max"] = new JSONValue(slider->max);
+	root[L"step"] = new JSONValue(slider->step);
+	root[L"name"] = new JSONValue(slider->w_name);
+	JSONValue *json = new JSONValue(root);
+	// std::wcout << "constructed JSON: " << json->Stringify().c_str() << "\n";
+	std::wstring wide = json->Stringify().c_str();
+	std::string str( wide.begin(), wide.end() );
+	ws_server->send("scope_control", str.c_str());
 }
 
 void Scope::sendSlider(ScopeSlider* slider){
