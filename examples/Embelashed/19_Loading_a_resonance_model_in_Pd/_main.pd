@@ -1,0 +1,21 @@
+#N canvas 553 272 857 528 10;
+#X obj 103 245 dac~ 1 2;
+#X obj 160 244 print;
+#X floatatom 219 142 5 0 0 0 - - -, f 5;
+#X obj 219 120 hradio 15 0 0 4 empty empty empty 0 -8 0 10 -262144
+-1 -1 0;
+#X text 219 103 model select;
+#X obj 219 166 res-load, f 10;
+#X obj 103 188 resonators~;
+#X msg 102 138 0.5;
+#X text 102 101 impulse;
+#X obj 103 118 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X connect 2 0 5 0;
+#X connect 3 0 2 0;
+#X connect 5 0 1 0;
+#X connect 5 0 6 0;
+#X connect 6 0 0 0;
+#X connect 6 0 0 1;
+#X connect 7 0 6 0;
+#X connect 9 0 7 0;
