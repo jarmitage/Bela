@@ -1,7 +1,7 @@
 #N canvas 970 506 670 430 10;
 #X floatatom 263 138 5 0 0 0 - - -, f 5;
-#X obj 263 116 hradio 15 0 0 4 empty empty empty 0 -8 0 10 -262144
--1 -1 0;
+#X obj 263 116 hradio 15 0 0 14 empty empty empty 0 -8 0 10 -262144
+-1 -1 2;
 #X text 263 99 model select;
 #X obj 263 218 res-load, f 10;
 #X obj 60 256 resonators~;
@@ -15,11 +15,11 @@
 #X text 90 159 to resonators~;
 #X text 328 218 loads default resonance models;
 #X obj 438 341 audioOnOff;
-#X obj 438 317 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+#X obj 438 317 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
 1;
 #X obj 438 292 loadbang;
 #X obj 60 313 output~;
-#X text 324 116 radio buttons will output integers;
+#X text 309 136 radio buttons will output integers;
 #X obj 114 313 scope0~;
 #X obj 279 164 print select;
 #X obj 263 314 print model;
