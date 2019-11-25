@@ -24,13 +24,16 @@ ws.onopen = ws_onopen;
 var zero = 0, triggerChannel = 0, xOffset = 0, triggerLevel = 0, numChannels = 0, upSampling = 0;
 var inFrameWidth = 0, outFrameWidth = 0, inArrayWidth = 0, outArrayWidth = 0, interpolation = 0;
 
+const plotModeTimeDomain = 0;
+const plotModeFft = 1;
+
 onmessage = function(e){
 	if (!e.data || !e.data.event) return;
 	if (e.data.event === 'settings'){
 		settings = e.data.settings;
-		if (settings.plotMode == 0){
+		if (plotModeTimeDomain == settings.plotMode){
 			zero = settings.frameHeight/2;
-		} else if (settings.plotMode == 1){
+		} else if (plotModeFft == settings.plotMode){
 			zero = settings.frameHeight;
 		}
 		
@@ -79,7 +82,7 @@ var ws_onmessage = function(e){
 				var second = inArray[inIndex + 1 < endOfInArray ? inIndex + 1 : endOfInArray];
 				var diff = interpolation ? u*(second-first)/upSampling : 0;
 				outIndex = channel*outFrameWidth + frame*upSampling + u;
-				outArray[outIndex] = zero * (1 - (channelConfig[channel].yOffset + (inArray[inIndex]+diff)) / channelConfig[channel].yAmplitude);
+				outArray[outIndex] = zero * (1 - (channelConfig[channel].yOffset + (inArray[inIndex]+diff)) * channelConfig[channel].yAmplitude);
 			}
 		}
 		// the above will not always get to the end of outArray, depending on the ratio between upSampling and outFrameWidth

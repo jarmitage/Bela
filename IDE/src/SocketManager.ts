@@ -20,7 +20,7 @@ let interval: NodeJS.Timer;
 export function init(server: http.Server){
 	ide_sockets = io(server, {
 		pingInterval: 3000,
-		pingTimeout: 6500
+		pingTimeout: 100000
 	}).of('/IDE');
 	ide_sockets.on('connection', connection);
 }
@@ -68,6 +68,7 @@ async function init_message(socket: SocketIO.Socket){
 	let message: util.Init_Message = {
 		projects 	: await project_manager.listProjects(),
 		examples 	: await project_manager.listExamples(),
+    libraries 	: await project_manager.listLibraries(),
 		settings 	: await ide_settings.read(),
 		boot_project 	: await boot_project.get_boot_project(),
 		board_string	: await IDE.board_detect().catch(e => console.log('error in board detect', e)),
@@ -111,7 +112,14 @@ async function project_event(socket: SocketIO.Socket, data: any){
 			socket.broadcast.emit('project-list', data.currentProject, data.projectList);
 		// if a file was opened save this in the project settings
 		if (data.fileName)
+		{
 			project_settings.set_fileName(data.currentProject, data.fileName);
+		}
+		if (!data.fileName && "deleteFile" === data.func)
+		{
+			console.log("Delete file, setting filename to null");
+			project_settings.set_fileName(data.currentProject, null);
+		}
 	}
 }
 
@@ -188,7 +196,10 @@ async function git_event(socket: SocketIO.Socket, data: any){
 }
 
 async function list_files(socket: SocketIO.Socket, project: string){
-	let files: util.File_Descriptor[] = await project_manager.listFiles(project)
-		.catch((e: Error) => console.log('error refreshing file list', e.toString()) );
-	socket.emit('file-list', project, files);
+	if(await project_manager.projectExists(project))
+	{
+		let files: util.File_Descriptor[] = await project_manager.listFiles(project)
+			.catch((e: Error) => console.log('error refreshing file list', e.toString()) );
+		socket.emit('file-list', project, files);
+	}
 }

@@ -5,7 +5,7 @@ SCRIPTDIR=$(dirname "$0")
 [ -z $SCRIPTDIR ] && SCRIPTDIR="./" || SCRIPTDIR=$SCRIPTDIR/
 . $SCRIPTDIR.bela_common || { echo "You must be in Bela/scripts to run these scripts" | exit 1; }
 
-EXAMPLE_FOLDER=13-Salt
+EXAMPLE_FOLDER=Salt
 BELA_CONFIG=~/.bela/belaconfig
 TMP_BELA_CONFIG=/tmp/belaconfig
 
@@ -29,7 +29,7 @@ if [ "$1" = "--examples" ]
 then
 	for e in `cd examples/$EXAMPLE_FOLDER/ && ls`
 	do
-		if [ "$e" != salt-demo ]
+		if [ "$e" != salt-demo ] && [ -d "examples/$EXAMPLE_FOLDER/$e" ]
 		then
 			PROJECTNAME=loop_$e
 			echo Building project $PROJECTNAME
@@ -38,16 +38,3 @@ then
 	done
 	make -C ~/Bela startuploop
 fi
-
-if [ "`board_detect`" != "Salt" ]
-then
-	make -C resources/tools/board_detect install
-fi
-
-if [ "`board_detect`" != "Salt" ]
-then
-	echo "An unexpected error happened while making your board salty" >&2
-else
-	echo "Success: your board has now 100% more Salt"
-fi
-
