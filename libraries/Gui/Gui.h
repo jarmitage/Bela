@@ -98,6 +98,10 @@ class Gui
 			customOnData = callback;
 			userBinaryData = customBinaryData;
 		};
+		/** Sends a JSON value to the control websocket.
+		 * Returns 0 on success, or an error code otherwise.
+		 * */
+		int sendControl(JSONValue* root);
 
 		/**
 		 * Sends a buffer (a vector) through the web-socket to the client with a given ID.
